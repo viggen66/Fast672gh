@@ -380,26 +380,9 @@ var stagegold = function () {
 	p.fcall(payload_buffer);
 	document.getElementById('msgs').innerHTML = "<div>GoldHEN Loaded ✓</div>";
 	
-	p.cleanup();
-	
-	payload_writer = null;
-	payload_buffer = null;
-	payload_uint32 = null;
-	
-	if (textArea) {
-		textArea.onclick = null;
-		textArea.onfocus = null;
-		textArea.onblur = null;
-	}
-	
-	cachedGadgets = null;
-	syscallsCache = null;
-	nogcArray = null;
-	
-	if (window.gc) {
-		setTimeout(function() {
-			window.gc();
-		}, 1000);
-	}
+    payload_writer = null;
+    payload_buffer = null;
+    payload_uint32 = null;
 
 }
+
